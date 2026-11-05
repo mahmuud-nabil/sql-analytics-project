@@ -1,0 +1,11 @@
+# Python
+.venv/
+__pycache__/
+
+# Secrets / local config
+.env
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db

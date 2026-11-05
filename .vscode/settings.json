@@ -1,0 +1,37 @@
+{
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "Docker - Postgres 16",
+            "database": "postgres",
+            "username": "postgres",
+            "password": "postgres"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "Practice",
+            "database": "postgres",
+            "username": "postgres",
+            "password": "postgres"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "ecommerce",
+            "username": "postgres",
+            "password": "postgres",
+            "database": "ecommerce"
+        }
+    ]
+}
