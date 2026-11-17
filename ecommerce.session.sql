@@ -1,39 +1,48 @@
 SET search_path TO shop;
 
--- =========================================
--- Exercise 1 + 2: Monthly revenue & running total (2025)
--- =========================================
-WITH monthly_revenue AS (
-    SELECT
-        date_trunc('month', payment_date)::date AS month,
-        SUM(amount)                             AS revenue
-    FROM payments
-    WHERE payment_date >= '2025-01-01'
-      AND payment_date <  '2026-01-01'
-    GROUP BY 1
+WITH  Emails_null AS (
+    SELECT COUNT(*) AS total_rows,
+        SUM(
+            CASE 
+                WHEN email IS NULL THEN 1
+                ELSE 0
+            END 
+        ) AS null_emails,
+        COUNT(DISTINCT email) AS distinct_email,
+        COUNT(DISTINCT LOWER(email)) AS distinct_email_normalized,
+        COUNT(DISTINCT city) AS distinct_city
+    FROM customers
 ),
 
-Runing_Total AS(
-    SELECT month,
-        revenue,
+Profiling AS(
+    SELECT total_rows,
+        null_emails, 
 
-        SUM(revenue) OVER (
-        ORDER BY month
-        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-        ) AS running_total,
-
-        LAG(revenue, 1) OVER( 
-        ORDER BY month
-    ) AS prev_month_revenue
-
-    FROM monthly_revenue
-    ORDER BY month
+        ROUND(
+            100.0 * null_emails / total_rows , 
+            2) AS null_email_pct,
+        distinct_email,
+        distinct_email_normalized,
+        distinct_city
+    FROM Emails_null
 )
 
-SELECT month,
-    revenue,
-    prev_month_revenue,
-    running_total,
-    (revenue - prev_month_revenue)/ prev_month_revenue *100 AS mom_growth_pct
+SELECT 'Customer email is not null' AS rule_name, 
+    'Completeness' AS dimension, 
+    total_rows AS total_checked,
+    null_emails AS failed_count,
+   ROUND( 100.0 * distinct_email /  total_rows , 2) AS pass_pct
+FROM Profiling
 
-FROM Runing_Total;
+UNION ALL
+
+SELECT 'Customer email is unique (normalized)', 
+    'Uniqueness',
+    total_rows,
+    distinct_email - distinct_email_normalized,
+    ROUND( 100.0 * distinct_email /  total_rows , 2)
+FROM Profiling;
+
+
+
+
